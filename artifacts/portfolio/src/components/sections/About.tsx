@@ -33,7 +33,7 @@ export function About() {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent mix-blend-overlay z-10" />
               <img 
                 src={`${import.meta.env.BASE_URL}images/avatar.png`} 
-                alt="João Silva" 
+                alt="João Gaspar" 
                 className="w-full h-full object-cover"
               />
             </div>

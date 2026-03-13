@@ -41,7 +41,7 @@ export function Hero() {
               Olá, eu sou o
             </span>
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-bold mb-4">
-              João Silva
+              João Gaspar
             </h1>
           </motion.div>
 

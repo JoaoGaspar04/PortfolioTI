@@ -1,70 +1,161 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FolderGit2, Activity, Terminal } from "lucide-react";
+import { GitFork, Star, ExternalLink, Loader2 } from "lucide-react";
 
-const PROJECTS = [
-  {
-    title: "Implementação de AD",
-    description: "Migração de grupo de trabalho local para domínio estruturado. Implementação de Active Directory do zero para uma empresa com 150 utilizadores, incluindo GPOs de segurança e mapeamento de drives.",
-    icon: FolderGit2,
-    tags: ["Windows Server", "Active Directory", "GPO", "Segurança"]
-  },
-  {
-    title: "Monitoring Dashboard",
-    description: "Desenvolvimento e configuração de um dashboard centralizado para monitorização pró-ativa da rede. Integração do Zabbix com o Grafana para visualização em tempo real de latência, CPU e tráfego.",
-    icon: Activity,
-    tags: ["Zabbix", "Grafana", "SNMP", "Linux"]
-  },
-  {
-    title: "Automatização PowerShell",
-    description: "Criação de um conjunto de scripts complexos em PowerShell para automatizar o onboarding e offboarding de colaboradores, garantindo criação de contas (AD/Exchange) e atribuição de permissões corretas em segundos.",
-    icon: Terminal,
-    tags: ["PowerShell", "Office 365", "Automação", "Scripting"]
-  }
-];
+const GITHUB_USERNAME = "JoaoGaspar04";
+
+interface Repo {
+  id: number;
+  name: string;
+  description: string | null;
+  html_url: string;
+  language: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  updated_at: string;
+}
+
+const LANGUAGE_COLORS: Record<string, string> = {
+  TypeScript: "bg-blue-500",
+  JavaScript: "bg-yellow-400",
+  Python: "bg-green-500",
+  PHP: "bg-purple-500",
+  HTML: "bg-orange-500",
+  CSS: "bg-pink-500",
+  Shell: "bg-gray-400",
+};
+
+function formatRepoName(name: string) {
+  return name.replace(/[-_]/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+}
 
 export function Projects() {
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=20`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data: Repo[]) => {
+        const filtered = data
+          .filter((r) => r.name !== GITHUB_USERNAME)
+          .slice(0, 6);
+        setRepos(filtered);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <section id="projetos" className="py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Projetos em <span className="text-accent">Destaque</span></h2>
-          <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+            Projetos no <span className="text-accent">GitHub</span>
+          </h2>
+          <div className="w-20 h-1 bg-accent mx-auto rounded-full mb-4" />
+          <p className="text-muted-foreground">
+            Repositórios públicos de{" "}
+            <a
+              href={`https://github.com/${GITHUB_USERNAME}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent hover:underline"
+            >
+              @{GITHUB_USERNAME}
+            </a>
+          </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PROJECTS.map((project, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.15 }}
-              className="glass-panel p-8 rounded-2xl group hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(139,92,246,0.15)] transition-all duration-300 border-t-2 border-t-transparent hover:border-t-accent flex flex-col h-full"
-            >
-              <div className="p-4 rounded-xl bg-accent/10 text-accent w-fit mb-6 group-hover:scale-110 transition-transform">
-                <project.icon className="w-8 h-8" />
-              </div>
-              
-              <h3 className="text-2xl font-display font-bold mb-3">{project.title}</h3>
-              <p className="text-muted-foreground leading-relaxed flex-1 mb-6">
-                {project.description}
-              </p>
-              
-              <div className="flex flex-wrap gap-2 mt-auto">
-                {project.tags.map((tag, tIdx) => (
-                  <span key={tIdx} className="text-xs font-medium px-2.5 py-1 rounded bg-white/5 text-foreground/80">
-                    {tag}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="w-8 h-8 text-accent animate-spin" />
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center text-muted-foreground py-10">
+            Não foi possível carregar os repositórios. Tenta mais tarde.
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {repos.map((repo, idx) => (
+              <motion.a
+                key={repo.id}
+                href={repo.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.08 }}
+                className="glass-panel p-6 rounded-2xl group hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(139,92,246,0.15)] transition-all duration-300 border border-transparent hover:border-accent/30 flex flex-col h-full"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-lg font-display font-bold group-hover:text-accent transition-colors leading-tight">
+                    {formatRepoName(repo.name)}
+                  </h3>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors flex-shrink-0 ml-2 mt-1" />
+                </div>
+
+                <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-4">
+                  {repo.description || (
+                    <span className="italic opacity-50">Sem descrição</span>
+                  )}
+                </p>
+
+                <div className="flex items-center gap-4 mt-auto text-sm text-muted-foreground">
+                  {repo.language && (
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className={`w-3 h-3 rounded-full ${LANGUAGE_COLORS[repo.language] ?? "bg-gray-500"}`}
+                      />
+                      {repo.language}
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5" />
+                    {repo.stargazers_count}
                   </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  <span className="flex items-center gap-1">
+                    <GitFork className="w-3.5 h-3.5" />
+                    {repo.forks_count}
+                  </span>
+                </div>
+              </motion.a>
+            ))}
+          </div>
+        )}
+
+        <motion.div
+          className="text-center mt-10"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          <a
+            href={`https://github.com/${GITHUB_USERNAME}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-accent/30 text-accent hover:bg-accent/10 transition-all duration-300 font-medium"
+          >
+            Ver todos os repositórios no GitHub <ExternalLink className="w-4 h-4" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

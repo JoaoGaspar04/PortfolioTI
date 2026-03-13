@@ -7,12 +7,12 @@ export function Footer() {
         <div className="flex flex-col items-center md:items-start gap-2">
           <span className="font-display font-bold text-xl tracking-tight">João<span className="text-primary">.IT</span></span>
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} João Silva. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} João Gaspar. Todos os direitos reservados.
           </p>
         </div>
         
         <div className="flex items-center gap-4">
-          <a href="#" className="p-3 rounded-full bg-white/5 hover:bg-primary/20 hover:text-primary transition-all duration-300 text-muted-foreground">
+          <a href="https://github.com/JoaoGaspar04" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 hover:bg-primary/20 hover:text-primary transition-all duration-300 text-muted-foreground">
             <Github className="w-5 h-5" />
           </a>
           <a href="#" className="p-3 rounded-full bg-white/5 hover:bg-secondary/20 hover:text-secondary transition-all duration-300 text-muted-foreground">
