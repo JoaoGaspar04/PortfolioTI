@@ -18,7 +18,7 @@ export default defineConfig({
       ? []
       : [
           // mockupPreviewPlugin só em dev
-          await import("./mockupPreviewPlugin").then((m) => m.mockupPreviewPlugin()),
+          //await import("./mockupPreviewPlugin").then((m) => m.mockupPreviewPlugin()),
         ]),
   ],
   resolve: {
