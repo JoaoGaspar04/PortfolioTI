@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { GitFork, Star, ExternalLink, Loader2 } from "lucide-react";
+import { GitFork, Star, ExternalLink, Loader2, Code2, Eye } from "lucide-react";
 
 const GITHUB_USERNAME = "JoaoGaspar04";
 
@@ -9,6 +9,7 @@ interface Repo {
   name: string;
   description: string | null;
   html_url: string;
+  homepage: string | null;
   language: string | null;
   stargazers_count: number;
   forks_count: number;
@@ -94,36 +95,33 @@ export function Projects() {
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {repos.map((repo, idx) => (
-              <motion.a
+              <motion.div
                 key={repo.id}
-                href={repo.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.08 }}
                 className="glass-panel p-6 rounded-2xl group hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(139,92,246,0.15)] transition-all duration-300 border border-transparent hover:border-accent/30 flex flex-col h-full"
               >
-                <div className="flex items-start justify-between mb-4">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-display font-bold group-hover:text-accent transition-colors leading-tight">
                     {formatRepoName(repo.name)}
                   </h3>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors flex-shrink-0 ml-2 mt-1" />
                 </div>
 
+                {/* Description */}
                 <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-4">
-                  {repo.description || (
+                  {repo.description ?? (
                     <span className="italic opacity-50">Sem descrição</span>
                   )}
                 </p>
 
-                <div className="flex items-center gap-4 mt-auto text-sm text-muted-foreground">
+                {/* Stats */}
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-5">
                   {repo.language && (
                     <span className="flex items-center gap-1.5">
-                      <span
-                        className={`w-3 h-3 rounded-full ${LANGUAGE_COLORS[repo.language] ?? "bg-gray-500"}`}
-                      />
+                      <span className={`w-3 h-3 rounded-full ${LANGUAGE_COLORS[repo.language] ?? "bg-gray-500"}`} />
                       {repo.language}
                     </span>
                   )}
@@ -136,7 +134,38 @@ export function Projects() {
                     {repo.forks_count}
                   </span>
                 </div>
-              </motion.a>
+
+                {/* Buttons */}
+                <div className="flex gap-2 mt-auto">
+                  <a
+                    href={repo.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 hover:text-foreground text-muted-foreground transition-all duration-200"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Code2 className="w-4 h-4" />
+                    Código
+                  </a>
+                  {repo.homepage ? (
+                    <a
+                      href={repo.homepage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium bg-accent/10 border border-accent/30 hover:bg-accent/20 text-accent transition-all duration-200"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Eye className="w-4 h-4" />
+                      Ver
+                    </a>
+                  ) : (
+                    <span className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium bg-white/5 border border-white/5 text-muted-foreground/30 cursor-not-allowed select-none">
+                      <Eye className="w-4 h-4" />
+                      Ver
+                    </span>
+                  )}
+                </div>
+              </motion.div>
             ))}
           </div>
         )}
