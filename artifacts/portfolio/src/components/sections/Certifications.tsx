@@ -1,103 +1,209 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Network, Server, Cloud, Lock, ChevronDown, Star, BookOpen, Headphones } from "lucide-react";
+import {
+  Shield, Network, Server, Cloud, Lock, BookOpen,
+  Headphones, Star, Search, ArrowUpDown, ChevronDown, ChevronUp, Wrench
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Category = "Todos" | "Cisco" | "Fortinet" | "Microsoft" | "Cibersegurança" | "Linux & Sistemas" | "IT Support" | "Formação";
+type Category =
+  | "Todos"
+  | "Cisco"
+  | "Fortinet"
+  | "Palo Alto"
+  | "Microsoft"
+  | "Cibersegurança"
+  | "Linux & Sistemas"
+  | "IT Support"
+  | "Ferramentas"
+  | "Formação";
+
+type SortOption = "recente" | "az" | "za";
 
 interface Cert {
   name: string;
   issuer: string;
   date: string;
+  dateOrder: number; // year*12 + month
   category: Exclude<Category, "Todos">;
   featured?: boolean;
 }
 
+const C = (
+  name: string,
+  issuer: string,
+  date: string,
+  dateOrder: number,
+  category: Exclude<Category, "Todos">,
+  featured?: boolean
+): Cert => ({ name, issuer, date, dateOrder, category, featured });
+
 const CERTS: Cert[] = [
-  // Formação Académica / Profissional
-  { name: "Técnico de Informática e Gestão de Redes", issuer: "Ensiguarda – Escola Profissional da Guarda", date: "2022", category: "Formação", featured: true },
-  { name: "CTesp de Cibersegurança", issuer: "Politécnico da Guarda", date: "2025", category: "Formação", featured: true },
+  // ── Formação ─────────────────────────────────────────────────────────
+  C("Técnico de Informática e Gestão de Redes", "Ensiguarda – Escola Profissional da Guarda", "2022", 2022 * 12 + 6, "Formação", true),
+  C("CTesp de Cibersegurança", "Politécnico da Guarda", "2025", 2025 * 12 + 6, "Formação", true),
 
-  // IT Support
-  { name: "Google IT Support", issuer: "Google / Coursera", date: "2025", category: "IT Support", featured: true },
-  { name: "IBM IT Support", issuer: "IBM / Coursera", date: "2025", category: "IT Support", featured: true },
-  { name: "Microsoft IT Support Specialist", issuer: "Microsoft / Coursera", date: "2025", category: "IT Support", featured: true },
+  // ── IT Support ───────────────────────────────────────────────────────
+  C("Google IT Support", "Google / Coursera", "nov 2025", 2025 * 12 + 11, "IT Support", true),
+  C("IBM IT Support", "IBM / Coursera", "dez 2025", 2025 * 12 + 12, "IT Support", true),
+  C("Microsoft IT Support Specialist", "Microsoft", "nov 2025", 2025 * 12 + 11, "IT Support", true),
+  C("Technical Support Fundamentals", "Google", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("Operating Systems and You: Becoming a Power User", "Google", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("The Bits and Bytes of Computer Networking", "Google", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("System Administration and IT Infrastructure Services", "Google", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("IT Security: Defense against the digital dark arts", "Google", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("Tech Support Career Guide and Interview Preparation", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Technical Support (IT) Case Studies and Capstone", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Practice Exam for CompTIA Tech+ Certification", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Introduction to Cloud Computing", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Introduction to Cybersecurity Essentials", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Introduction to Networking and Storage", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Introduction to Software, Programming, and Databases", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Introduction to Hardware and Operating Systems", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Introduction to Technical Support", "IBM", "dez 2025", 2025 * 12 + 12, "IT Support"),
+  C("Technical Diagnostics and Troubleshooting Techniques", "Microsoft", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("The Microsoft 365 Ecosystem", "Microsoft", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("Essential Aspects of Software, Hardware, and Data Backup", "Microsoft", "nov 2025", 2025 * 12 + 11, "IT Support"),
+  C("Introduction to Secure Networking", "Microsoft", "nov 2025", 2025 * 12 + 11, "IT Support"),
 
-  // Cisco
-  { name: "CCNA 1 – Introdução a Redes de Computadores", issuer: "Universidade da Beira Interior", date: "fev 2026", category: "Cisco", featured: true },
-  { name: "Hacker Ético", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Cyber Threat Management", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Trilha: Analista de Cibersegurança Júnior", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Introdução à Cibersegurança", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Defesa de Rede", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Segurança de Endpoint", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Dispositivos de Rede e Configuração Inicial", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Conceitos Básicos de Redes", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Cisco Packet Tracer", issuer: "Cisco Networking Academy", date: "fev 2024", category: "Cisco" },
+  // ── Cisco ────────────────────────────────────────────────────────────
+  C("CCNA 1 – Introdução a Redes de Computadores", "Universidade da Beira Interior", "fev 2026", 2026 * 12 + 2, "Cisco", true),
+  C("Hacker Ético", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Cyber Threat Management", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Trilha Profissionalizante do Analista de Cibersegurança Júnior", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Introdução à Cibersegurança", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Defesa de Rede", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Segurança de Endpoint", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Dispositivos de Rede e Configuração Inicial", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Conceitos Básicos de Redes", "Cisco Networking Academy", "jan 2026", 2026 * 12 + 1, "Cisco"),
+  C("Começando com o Cisco Packet Tracer", "Cisco Networking Academy", "fev 2024", 2024 * 12 + 2, "Cisco"),
 
-  // Fortinet
-  { name: "Network Security Support Engineer", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
-  { name: "FortiGate Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
-  { name: "Enterprise Firewall Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
-  { name: "FortiAnalyzer Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
-  { name: "FortiManager Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
-  { name: "Fortinet Network Security", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+  // ── Fortinet ─────────────────────────────────────────────────────────
+  C("Network Security Support Engineer", "Fortinet", "dez 2025", 2025 * 12 + 12, "Fortinet"),
+  C("Fortinet Network Security", "Fortinet", "dez 2025", 2025 * 12 + 12, "Fortinet"),
+  C("FortiGate Administrator", "Fortinet", "dez 2025", 2025 * 12 + 12, "Fortinet"),
+  C("Enterprise Firewall Administrator", "Fortinet", "dez 2025", 2025 * 12 + 12, "Fortinet"),
+  C("FortiAnalyzer Administrator", "Fortinet", "dez 2025", 2025 * 12 + 12, "Fortinet"),
+  C("FortiManager Administrator", "Fortinet", "dez 2025", 2025 * 12 + 12, "Fortinet"),
 
-  // Microsoft
-  { name: "Microsoft 365 Fundamentals", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft" },
-  { name: "BE COPILOT READY", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft" },
-  { name: "Microsoft Cloud Support Associate", issuer: "Microsoft", date: "dez 2025", category: "Microsoft" },
-  { name: "Azure Backup, Security & Compliance Administration", issuer: "Microsoft", date: "dez 2025", category: "Microsoft" },
-  { name: "Windows Server Administration", issuer: "Packt", date: "dez 2025", category: "Microsoft" },
+  // ── Palo Alto ────────────────────────────────────────────────────────
+  C("Palo Alto Networks Cybersecurity", "Palo Alto Networks", "dez 2025", 2025 * 12 + 12, "Palo Alto"),
+  C("Palo Alto Networks Cybersecurity Foundation", "Palo Alto Networks", "dez 2025", 2025 * 12 + 12, "Palo Alto"),
+  C("Palo Alto Networks Network Security Fundamentals", "Palo Alto Networks", "dez 2025", 2025 * 12 + 12, "Palo Alto"),
+  C("Palo Alto Networks Cloud Security Fundamentals", "Palo Alto Networks", "dez 2025", 2025 * 12 + 12, "Palo Alto"),
+  C("Palo Alto Networks Security Operations Fundamentals", "Palo Alto Networks", "dez 2025", 2025 * 12 + 12, "Palo Alto"),
 
-  // Cibersegurança
-  { name: "Enterprise and Infrastructure Security", issuer: "New York University", date: "jan 2026", category: "Cibersegurança" },
-  { name: "Real-Time Cyber Threat Detection and Mitigation", issuer: "New York University", date: "dez 2025", category: "Cibersegurança" },
-  { name: "Introduction to Cyber Attacks", issuer: "New York University", date: "dez 2025", category: "Cibersegurança" },
-  { name: "Cyber Incident Response", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
-  { name: "Technical Deep Dive with Incident Response Tools", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
-  { name: "Stages of Incident Response", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
+  // ── Microsoft ────────────────────────────────────────────────────────
+  C("Microsoft 365 Fundamentals", "Academy Microsoft 365 atWork", "fev 2026", 2026 * 12 + 2, "Microsoft"),
+  C("BE COPILOT READY", "Academy Microsoft 365 atWork", "fev 2026", 2026 * 12 + 2, "Microsoft"),
+  C("Microsoft Cloud Support Associate", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("Azure Backup, Security and Compliance Administration", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("Fundamentos do Monitoramento e da Análise do Azure", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("Azure Network Configuration", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("Azure Identity and Networking Essentials", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("Azure Cloud Services", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("Cloud Computing Essentials with Azure Management", "Microsoft", "dez 2025", 2025 * 12 + 12, "Microsoft"),
+  C("A Complete Course on Windows Server Administration", "Packt", "dez 2025", 2025 * 12 + 12, "Microsoft"),
 
-  // Linux & Sistemas
-  { name: "Linux Foundation Certified System Administrator (LFCS)", issuer: "Pearson", date: "dez 2025", category: "Linux & Sistemas", featured: true },
-  { name: "cPanel Professional", issuer: "cPanel", date: "dez 2025", category: "Linux & Sistemas", featured: true },
-  { name: "cPanel & WHM System Administrator I", issuer: "cPanel", date: "dez 2025", category: "Linux & Sistemas", featured: true },
-  { name: "Linux for AIX System Administrators", issuer: "IBM", date: "dez 2025", category: "Linux & Sistemas" },
+  // ── Cibersegurança ───────────────────────────────────────────────────
+  C("Enterprise and Infrastructure Security", "New York University", "jan 2026", 2026 * 12 + 1, "Cibersegurança"),
+  C("Real-Time Cyber Threat Detection and Mitigation", "New York University", "dez 2025", 2025 * 12 + 12, "Cibersegurança"),
+  C("Introduction to Cyber Attacks", "New York University", "dez 2025", 2025 * 12 + 12, "Cibersegurança"),
+  C("Cyber Incident Response", "InfoSEC", "dez 2025", 2025 * 12 + 12, "Cibersegurança"),
+  C("Technical Deep Dive with Incident Response Tools", "InfoSEC", "dez 2025", 2025 * 12 + 12, "Cibersegurança"),
+  C("Stages of Incident Response", "InfoSEC", "dez 2025", 2025 * 12 + 12, "Cibersegurança"),
+
+  // ── Linux & Sistemas ─────────────────────────────────────────────────
+  C("Linux Foundation Certified System Administrator (LFCS)", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas", true),
+  C("LFCS: Unit 1", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 2", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 3", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 4", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 5", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 6", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 7", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 8", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("LFCS: Unit 9", "Pearson", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("Linux for AIX System Administrators", "IBM", "dez 2025", 2025 * 12 + 12, "Linux & Sistemas"),
+  C("cPanel Professional", "cPanel", "nov 2025", 2025 * 12 + 11, "Linux & Sistemas", true),
+  C("cPanel & WHM System Administrator I", "cPanel", "nov 2025", 2025 * 12 + 11, "Linux & Sistemas", true),
+  C("cPanel & WHM System Administrator II", "cPanel", "nov 2025", 2025 * 12 + 11, "Linux & Sistemas"),
+  C("Certified Calico Operator: Level 1", "Tigera", "nov 2025", 2025 * 12 + 11, "Linux & Sistemas"),
+
+  // ── Ferramentas ──────────────────────────────────────────────────────
+  C("Remote Desktop Manager", "Devolutions", "dez 2025", 2025 * 12 + 12, "Ferramentas"),
+  C("Remote Desktop Manager - Basic", "Devolutions", "dez 2025", 2025 * 12 + 12, "Ferramentas"),
+  C("Remote Desktop Manager - Intermediate", "Devolutions", "dez 2025", 2025 * 12 + 12, "Ferramentas"),
+  C("Remote Desktop Manager - Advanced", "Devolutions", "dez 2025", 2025 * 12 + 12, "Ferramentas"),
+  C("Remote Desktop Manager - Devolutions Integrations", "Devolutions", "dez 2025", 2025 * 12 + 12, "Ferramentas"),
+  C("Remote Desktop Manager - Devolutions Ecosystem", "Devolutions", "dez 2025", 2025 * 12 + 12, "Ferramentas"),
+  C("Excel", "Santander Open Academy", "out 2024", 2024 * 12 + 10, "Ferramentas"),
+  C("Internet das Coisas", "Santander Open Academy", "out 2024", 2024 * 12 + 10, "Ferramentas"),
 ];
 
-const CATEGORIES: Category[] = ["Todos", "Formação", "IT Support", "Cisco", "Fortinet", "Microsoft", "Cibersegurança", "Linux & Sistemas"];
+const CATEGORIES: Category[] = [
+  "Todos", "Formação", "IT Support", "Cisco", "Fortinet",
+  "Palo Alto", "Microsoft", "Cibersegurança", "Linux & Sistemas", "Ferramentas",
+];
 
 const CATEGORY_STYLES: Record<Exclude<Category, "Todos">, { bg: string; text: string; border: string; icon: React.ElementType }> = {
-  "Formação":         { bg: "bg-amber-500/10",   text: "text-amber-400",  border: "border-amber-500/30",  icon: BookOpen },
-  "IT Support":       { bg: "bg-teal-500/10",    text: "text-teal-400",   border: "border-teal-500/30",   icon: Headphones },
-  "Cisco":            { bg: "bg-blue-500/10",    text: "text-blue-400",   border: "border-blue-500/30",   icon: Network },
-  "Fortinet":         { bg: "bg-red-500/10",     text: "text-red-400",    border: "border-red-500/30",    icon: Shield },
-  "Microsoft":        { bg: "bg-sky-500/10",     text: "text-sky-400",    border: "border-sky-500/30",    icon: Cloud },
-  "Cibersegurança":   { bg: "bg-purple-500/10",  text: "text-purple-400", border: "border-purple-500/30", icon: Lock },
-  "Linux & Sistemas": { bg: "bg-emerald-500/10", text: "text-emerald-400",border: "border-emerald-500/30",icon: Server },
+  "Formação":         { bg: "bg-amber-500/10",   text: "text-amber-400",   border: "border-amber-500/30",   icon: BookOpen },
+  "IT Support":       { bg: "bg-teal-500/10",    text: "text-teal-400",    border: "border-teal-500/30",    icon: Headphones },
+  "Cisco":            { bg: "bg-blue-500/10",    text: "text-blue-400",    border: "border-blue-500/30",    icon: Network },
+  "Fortinet":         { bg: "bg-red-500/10",     text: "text-red-400",     border: "border-red-500/30",     icon: Shield },
+  "Palo Alto":        { bg: "bg-orange-500/10",  text: "text-orange-400",  border: "border-orange-500/30",  icon: Shield },
+  "Microsoft":        { bg: "bg-sky-500/10",     text: "text-sky-400",     border: "border-sky-500/30",     icon: Cloud },
+  "Cibersegurança":   { bg: "bg-purple-500/10",  text: "text-purple-400",  border: "border-purple-500/30",  icon: Lock },
+  "Linux & Sistemas": { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/30", icon: Server },
+  "Ferramentas":      { bg: "bg-gray-500/10",    text: "text-gray-400",    border: "border-gray-500/30",    icon: Wrench },
 };
 
-const INITIAL_VISIBLE = 9;
 const FEATURED = CERTS.filter((c) => c.featured);
+const SORT_LABELS: Record<SortOption, string> = {
+  recente: "Mais recente",
+  az: "A → Z",
+  za: "Z → A",
+};
 
 export function Certifications() {
   const [activeCategory, setActiveCategory] = useState<Category>("Todos");
+  const [sort, setSort] = useState<SortOption>("recente");
+  const [search, setSearch] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
 
-  const nonFeatured = activeCategory === "Todos"
-    ? CERTS.filter((c) => !c.featured)
-    : CERTS.filter((c) => c.category === activeCategory && !c.featured);
+  const featuredFiltered = useMemo(() =>
+    activeCategory === "Todos"
+      ? FEATURED
+      : CERTS.filter((c) => c.featured && c.category === activeCategory),
+    [activeCategory]
+  );
 
-  const featuredFiltered = activeCategory === "Todos"
-    ? FEATURED
-    : CERTS.filter((c) => c.category === activeCategory && c.featured);
+  const allFiltered = useMemo(() => {
+    let list = activeCategory === "Todos" ? CERTS : CERTS.filter((c) => c.category === activeCategory);
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter((c) =>
+        c.name.toLowerCase().includes(q) || c.issuer.toLowerCase().includes(q)
+      );
+    }
+    if (sort === "recente") list = [...list].sort((a, b) => b.dateOrder - a.dateOrder);
+    else if (sort === "az") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    else list = [...list].sort((a, b) => b.name.localeCompare(a.name));
+    return list;
+  }, [activeCategory, search, sort]);
 
-  const visibleNonFeatured = showAll ? nonFeatured : nonFeatured.slice(0, INITIAL_VISIBLE);
-  const hasMore = nonFeatured.length > INITIAL_VISIBLE;
+  const INITIAL = 12;
+  const visible = showAll ? allFiltered : allFiltered.slice(0, INITIAL);
+  const hasMore = allFiltered.length > INITIAL;
+
+  const catCount = (cat: Category) =>
+    cat === "Todos" ? CERTS.length : CERTS.filter((c) => c.category === cat).length;
 
   return (
     <section id="certificacoes" className="py-24 relative bg-card/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
@@ -115,7 +221,7 @@ export function Certifications() {
 
         {/* Category Filters */}
         <motion.div
-          className="flex flex-wrap justify-center gap-2 mb-12"
+          className="flex flex-wrap justify-center gap-2 mb-8"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -132,9 +238,7 @@ export function Certifications() {
               )}
             >
               {cat}
-              <span className="ml-1.5 text-xs opacity-60">
-                ({cat === "Todos" ? CERTS.length : CERTS.filter(c => c.category === cat).length})
-              </span>
+              <span className="ml-1.5 text-xs opacity-60">({catCount(cat)})</span>
             </button>
           ))}
         </motion.div>
@@ -142,9 +246,9 @@ export function Certifications() {
         <AnimatePresence mode="wait">
           <motion.div key={activeCategory} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
 
-            {/* Featured Section */}
-            {featuredFiltered.length > 0 && (
-              <div className="mb-10">
+            {/* ── Em Destaque ── */}
+            {featuredFiltered.length > 0 && !search && (
+              <div className="mb-12">
                 <div className="flex items-center gap-3 mb-5">
                   <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                   <span className="text-sm font-semibold text-amber-400 uppercase tracking-wider">Em Destaque</span>
@@ -159,9 +263,9 @@ export function Certifications() {
                         key={cert.name}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.06 }}
+                        transition={{ delay: idx * 0.05 }}
                         className={cn(
-                          "relative glass-panel p-5 rounded-xl flex items-start gap-4 border hover:-translate-y-1 transition-transform group",
+                          "relative glass-panel p-5 rounded-xl flex items-start gap-4 border hover:-translate-y-1 transition-transform",
                           style.border
                         )}
                       >
@@ -171,7 +275,7 @@ export function Certifications() {
                         <div className={cn("p-3 rounded-lg flex-shrink-0", style.bg, style.text)}>
                           <Icon className="w-6 h-6" />
                         </div>
-                        <div className="min-w-0 pr-16">
+                        <div className="min-w-0 pr-20">
                           <h4 className={cn("font-bold text-sm leading-tight mb-1", style.text)}>
                             {cert.name}
                           </h4>
@@ -187,17 +291,68 @@ export function Certifications() {
               </div>
             )}
 
-            {/* All Other Certs */}
-            {visibleNonFeatured.length > 0 && (
-              <>
-                {featuredFiltered.length > 0 && (
-                  <div className="flex items-center gap-3 mb-5">
-                    <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Todas as certificações</span>
-                    <div className="flex-1 h-px bg-border/50" />
-                  </div>
-                )}
+            {/* ── Todas as Certificações ── */}
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Todas as certificações
+                </span>
+                <div className="flex-1 h-px bg-border/50" />
+                <span className="text-xs text-muted-foreground">{allFiltered.length} resultado{allFiltered.length !== 1 ? "s" : ""}</span>
+              </div>
+
+              {/* Search + Sort */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Pesquisar certificação ou emissor..."
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); setShowAll(false); }}
+                    className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent/50 focus:bg-white/8 transition-all"
+                  />
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={() => setSortOpen((o) => !o)}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-muted-foreground hover:bg-white/10 hover:text-foreground transition-all min-w-[160px] justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <ArrowUpDown className="w-4 h-4" />
+                      {SORT_LABELS[sort]}
+                    </span>
+                    {sortOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+                  {sortOpen && (
+                    <div className="absolute right-0 top-full mt-1 w-48 glass-panel border border-white/10 rounded-xl overflow-hidden z-10 shadow-xl">
+                      {(Object.keys(SORT_LABELS) as SortOption[]).map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => { setSort(opt); setSortOpen(false); setShowAll(false); }}
+                          className={cn(
+                            "w-full text-left px-4 py-2.5 text-sm transition-colors",
+                            sort === opt
+                              ? "bg-accent/10 text-accent font-medium"
+                              : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                          )}
+                        >
+                          {SORT_LABELS[opt]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Grid */}
+              {visible.length === 0 ? (
+                <div className="text-center py-16 text-muted-foreground">
+                  Nenhuma certificação encontrada para "{search}".
+                </div>
+              ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {visibleNonFeatured.map((cert, idx) => {
+                  {visible.map((cert, idx) => {
                     const style = CATEGORY_STYLES[cert.category];
                     const Icon = style.icon;
                     return (
@@ -205,42 +360,57 @@ export function Certifications() {
                         key={cert.name + idx}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.04 }}
-                        className="glass-panel p-5 rounded-xl flex items-start gap-4 hover:-translate-y-1 transition-transform group"
+                        transition={{ delay: Math.min(idx, 11) * 0.03 }}
+                        className={cn(
+                          "glass-panel p-5 rounded-xl flex items-start gap-4 hover:-translate-y-1 transition-transform group border border-transparent",
+                          cert.featured && style.border
+                        )}
                       >
                         <div className={cn("p-2.5 rounded-lg flex-shrink-0", style.bg, style.text)}>
                           <Icon className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-semibold text-sm leading-tight mb-1 group-hover:text-accent transition-colors">
-                            {cert.name}
-                          </h4>
-                          <p className="text-xs text-muted-foreground truncate">{cert.issuer}</p>
-                          <span className={cn("inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full", style.bg, style.text)}>
-                            {cert.date}
-                          </span>
+                          <div className="flex items-start gap-1.5 mb-1">
+                            {cert.featured && (
+                              <Star className="w-3 h-3 text-amber-400 fill-amber-400 flex-shrink-0 mt-0.5" />
+                            )}
+                            <h4 className="font-semibold text-sm leading-tight group-hover:text-accent transition-colors">
+                              {cert.name}
+                            </h4>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{cert.issuer}</p>
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full", style.bg, style.text)}>
+                              {cert.date}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground/50">{cert.category}</span>
+                          </div>
                         </div>
                       </motion.div>
                     );
                   })}
                 </div>
-              </>
-            )}
+              )}
+
+              {/* Show More / Less */}
+              {hasMore && (
+                <motion.div className="text-center mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <button
+                    onClick={() => setShowAll((v) => !v)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-accent/30 text-accent hover:bg-accent/10 transition-all duration-300 font-medium"
+                  >
+                    {showAll ? (
+                      <><ChevronUp className="w-4 h-4" /> Mostrar menos</>
+                    ) : (
+                      <><ChevronDown className="w-4 h-4" /> Ver todas ({allFiltered.length - INITIAL} restantes)</>
+                    )}
+                  </button>
+                </motion.div>
+              )}
+            </div>
 
           </motion.div>
         </AnimatePresence>
-
-        {/* Show More */}
-        {hasMore && !showAll && (
-          <motion.div className="text-center mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <button
-              onClick={() => setShowAll(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-accent/30 text-accent hover:bg-accent/10 transition-all duration-300 font-medium"
-            >
-              Ver todas as {nonFeatured.length} certificações <ChevronDown className="w-4 h-4" />
-            </button>
-          </motion.div>
-        )}
       </div>
     </section>
   );
