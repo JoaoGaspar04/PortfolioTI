@@ -1,0 +1,19 @@
+packages:
+  "framer-motion": "For smooth scroll animations and text cycling in hero"
+  "react-hook-form": "For form state management"
+  "@hookform/resolvers": "For Zod validation integration"
+  "zod": "For contact form validation schema"
+  "clsx": "For conditional class name joining"
+  "tailwind-merge": "For merging tailwind classes safely"
+
+images:
+  - path: "artifacts/portfolio/public/images/hero-bg.png"
+    description: "Abstract dark technology background, deep slate and navy blue with very subtle glowing cyan and teal data nodes, blurred depth of field, premium corporate IT feel"
+    aspect_ratio: "16:9"
+  - path: "artifacts/portfolio/public/images/avatar.png"
+    description: "Professional stylized portrait of an IT professional in a server room or clean office environment, moody cinematic lighting with teal accents, semi-abstract or illustrated style"
+    aspect_ratio: "1:1"
+
+notes:
+  - This is a fully static single-page portfolio, no backend required.
+  - The contact form simulates a submission.
