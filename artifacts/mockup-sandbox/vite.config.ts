@@ -2,14 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 const isProduction = process.env.NODE_ENV === "production";
-
-// Para produção no Netlify, podemos ignorar PORT
-const rawPort = process.env.PORT;
-const port = rawPort ? Number(rawPort) : 5173;
 
 // BASE_PATH opcional, default para "/"
 const basePath = process.env.BASE_PATH || "/";
@@ -19,21 +13,12 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // Plugins de desenvolvimento só em dev
+    // Plugins de dev só fora de produção
     ...(isProduction
       ? []
       : [
-          mockupPreviewPlugin(),
-          runtimeErrorOverlay(),
-          ...(process.env.REPL_ID
-            ? [
-                await import("@replit/vite-plugin-cartographer").then((m) =>
-                  m.cartographer({
-                    root: path.resolve(import.meta.dirname, ".."),
-                  }),
-                ),
-              ]
-            : []),
+          // mockupPreviewPlugin só em dev
+          await import("./mockupPreviewPlugin").then((m) => m.mockupPreviewPlugin()),
         ]),
   ],
   resolve: {
@@ -47,16 +32,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port,
-    host: "0.0.0.0",
-    allowedHosts: true,
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
-  },
-  preview: {
-    port,
+    port: process.env.PORT ? Number(process.env.PORT) : 5173,
     host: "0.0.0.0",
     allowedHosts: true,
   },
