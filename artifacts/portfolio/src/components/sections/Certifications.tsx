@@ -1,74 +1,179 @@
-import { motion } from "framer-motion";
-import { Shield, Clock } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Shield, Network, Server, Cloud, Lock, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const CERTS = [
-  {
-    name: "Microsoft Certified: Azure Fundamentals",
-    code: "AZ-900",
-    status: "Concluído",
-    icon: Shield,
-    color: "text-blue-400"
-  },
-  {
-    name: "CompTIA A+",
-    code: "Core 1 & Core 2",
-    status: "Concluído",
-    icon: Shield,
-    color: "text-red-400"
-  },
-  {
-    name: "Cisco CCNA",
-    code: "200-301",
-    status: "Em Progresso",
-    icon: Clock,
-    color: "text-amber-400"
-  },
-  {
-    name: "ITIL 4 Foundation",
-    code: "IT Service Management",
-    status: "Concluído",
-    icon: Shield,
-    color: "text-emerald-400"
-  }
+type Category = "Todos" | "Cisco" | "Fortinet" | "Microsoft" | "Cibersegurança" | "Linux & Sistemas";
+
+interface Cert {
+  name: string;
+  issuer: string;
+  date: string;
+  category: Exclude<Category, "Todos">;
+}
+
+const CERTS: Cert[] = [
+  // Cisco
+  { name: "CCNA 1 – Introdução a Redes de Computadores", issuer: "Universidade da Beira Interior", date: "fev 2026", category: "Cisco" },
+  { name: "Hacker Ético", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Cyber Threat Management", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Trilha: Analista de Cibersegurança Júnior", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Introdução à Cibersegurança", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Defesa de Rede", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Segurança de Endpoint", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Dispositivos de Rede e Configuração Inicial", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Conceitos Básicos de Redes", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
+  { name: "Cisco Packet Tracer", issuer: "Cisco Networking Academy", date: "fev 2024", category: "Cisco" },
+
+  // Fortinet
+  { name: "Network Security Support Engineer", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+  { name: "FortiGate Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+  { name: "Enterprise Firewall Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+  { name: "FortiAnalyzer Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+  { name: "FortiManager Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+  { name: "Fortinet Network Security", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
+
+  // Microsoft
+  { name: "Microsoft 365 Fundamentals", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft" },
+  { name: "BE COPILOT READY", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft" },
+  { name: "Microsoft Cloud Support Associate", issuer: "Microsoft", date: "dez 2025", category: "Microsoft" },
+  { name: "Azure Backup, Security & Compliance Administration", issuer: "Microsoft", date: "dez 2025", category: "Microsoft" },
+  { name: "Windows Server Administration", issuer: "Packt", date: "dez 2025", category: "Microsoft" },
+
+  // Cibersegurança
+  { name: "Enterprise and Infrastructure Security", issuer: "New York University", date: "jan 2026", category: "Cibersegurança" },
+  { name: "Real-Time Cyber Threat Detection and Mitigation", issuer: "New York University", date: "dez 2025", category: "Cibersegurança" },
+  { name: "Introduction to Cyber Attacks", issuer: "New York University", date: "dez 2025", category: "Cibersegurança" },
+  { name: "Cyber Incident Response", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
+  { name: "Technical Deep Dive with Incident Response Tools", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
+  { name: "Stages of Incident Response", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
+
+  // Linux & Sistemas
+  { name: "Linux Foundation Certified Sys. Admin. (LFCS)", issuer: "Pearson", date: "dez 2025", category: "Linux & Sistemas" },
+  { name: "Linux for AIX System Administrators", issuer: "IBM", date: "dez 2025", category: "Linux & Sistemas" },
 ];
 
+const CATEGORIES: Category[] = ["Todos", "Cisco", "Fortinet", "Microsoft", "Cibersegurança", "Linux & Sistemas"];
+
+const CATEGORY_STYLES: Record<Exclude<Category, "Todos">, { bg: string; text: string; icon: React.ElementType }> = {
+  "Cisco":           { bg: "bg-blue-500/10",   text: "text-blue-400",   icon: Network },
+  "Fortinet":        { bg: "bg-red-500/10",     text: "text-red-400",    icon: Shield },
+  "Microsoft":       { bg: "bg-sky-500/10",     text: "text-sky-400",    icon: Cloud },
+  "Cibersegurança":  { bg: "bg-purple-500/10",  text: "text-purple-400", icon: Lock },
+  "Linux & Sistemas":{ bg: "bg-emerald-500/10", text: "text-emerald-400",icon: Server },
+};
+
+const INITIAL_VISIBLE = 9;
+
 export function Certifications() {
+  const [activeCategory, setActiveCategory] = useState<Category>("Todos");
+  const [showAll, setShowAll] = useState(false);
+
+  const filtered = activeCategory === "Todos"
+    ? CERTS
+    : CERTS.filter((c) => c.category === activeCategory);
+
+  const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
+  const hasMore = filtered.length > INITIAL_VISIBLE;
+
   return (
-    <section className="py-12 relative bg-card/30">
+    <section id="certificacoes" className="py-24 relative bg-card/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          className="flex items-center gap-4 mb-10"
+        <motion.div
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl md:text-3xl font-display font-bold">Certificações</h2>
-          <div className="flex-1 h-px bg-border/50" />
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+            Licenças & <span className="text-accent">Certificações</span>
+          </h2>
+          <div className="w-20 h-1 bg-accent mx-auto rounded-full mb-4" />
+          <p className="text-muted-foreground">
+            {CERTS.length} certificações obtidas em plataformas internacionais de referência
+          </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {CERTS.map((cert, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="glass-panel p-5 rounded-xl flex items-start gap-4 hover:-translate-y-1 transition-transform"
+        {/* Category Filters */}
+        <motion.div
+          className="flex flex-wrap justify-center gap-2 mb-10"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => { setActiveCategory(cat); setShowAll(false); }}
+              className={cn(
+                "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border",
+                activeCategory === cat
+                  ? "bg-accent text-background border-accent"
+                  : "bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10 hover:text-foreground"
+              )}
             >
-              <div className={`p-3 rounded-lg bg-white/5 ${cert.color}`}>
-                <cert.icon className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm leading-tight mb-1">{cert.name}</h4>
-                <p className="text-xs text-muted-foreground mb-2">{cert.code}</p>
-                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${cert.status === 'Concluído' ? 'bg-emerald-400/10 text-emerald-400' : 'bg-amber-400/10 text-amber-400'}`}>
-                  {cert.status}
-                </span>
-              </div>
-            </motion.div>
+              {cat}
+              <span className="ml-1.5 text-xs opacity-60">
+                ({cat === "Todos" ? CERTS.length : CERTS.filter(c => c.category === cat).length})
+              </span>
+            </button>
           ))}
-        </div>
+        </motion.div>
+
+        {/* Grid */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {visible.map((cert, idx) => {
+              const style = CATEGORY_STYLES[cert.category];
+              const Icon = style.icon;
+              return (
+                <motion.div
+                  key={cert.name + idx}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.04 }}
+                  className="glass-panel p-5 rounded-xl flex items-start gap-4 hover:-translate-y-1 transition-transform group"
+                >
+                  <div className={cn("p-2.5 rounded-lg flex-shrink-0", style.bg, style.text)}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="font-semibold text-sm leading-tight mb-1 group-hover:text-accent transition-colors">
+                      {cert.name}
+                    </h4>
+                    <p className="text-xs text-muted-foreground truncate">{cert.issuer}</p>
+                    <span className={cn("inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full", style.bg, style.text)}>
+                      {cert.date}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Show More */}
+        {hasMore && !showAll && (
+          <motion.div
+            className="text-center mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <button
+              onClick={() => setShowAll(true)}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-accent/30 text-accent hover:bg-accent/10 transition-all duration-300 font-medium"
+            >
+              Ver todas as {filtered.length} certificações <ChevronDown className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );
