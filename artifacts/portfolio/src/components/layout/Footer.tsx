@@ -15,7 +15,7 @@ export function Footer() {
           <a href="https://github.com/JoaoGaspar04" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 hover:bg-primary/20 hover:text-primary transition-all duration-300 text-muted-foreground">
             <Github className="w-5 h-5" />
           </a>
-          <a href="#" className="p-3 rounded-full bg-white/5 hover:bg-secondary/20 hover:text-secondary transition-all duration-300 text-muted-foreground">
+          <a href="https://www.linkedin.com/in/joacgaspar/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 hover:bg-secondary/20 hover:text-secondary transition-all duration-300 text-muted-foreground">
             <Linkedin className="w-5 h-5" />
           </a>
           <a href="mailto:contato@exemplo.pt" className="p-3 rounded-full bg-white/5 hover:bg-accent/20 hover:text-accent transition-all duration-300 text-muted-foreground">

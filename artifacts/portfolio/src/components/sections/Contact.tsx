@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, MapPin, Phone, Mail, CheckCircle2 } from "lucide-react";
+import { Send, MapPin, Phone, Mail, CheckCircle2, Linkedin } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,6 +85,18 @@ export function Contact() {
                 <h4 className="font-bold text-lg">Telemóvel</h4>
                 <a href="tel:+351912345678" className="text-muted-foreground hover:text-accent transition-colors">
                   +351 912 345 678
+                </a>
+              </div>
+            </div>
+
+            <div className="glass-panel p-6 rounded-2xl flex items-center gap-4">
+              <div className="p-4 rounded-full bg-blue-500/10 text-blue-400">
+                <Linkedin className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg">LinkedIn</h4>
+                <a href="https://www.linkedin.com/in/joacgaspar/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-blue-400 transition-colors">
+                  linkedin.com/in/joacgaspar
                 </a>
               </div>
             </div>
