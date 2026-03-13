@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Network, Server, Cloud, Lock, ChevronDown, Star } from "lucide-react";
+import { Shield, Network, Server, Cloud, Lock, ChevronDown, Star, BookOpen, Headphones } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Category = "Todos" | "Cisco" | "Fortinet" | "Microsoft" | "Cibersegurança" | "Linux & Sistemas";
+type Category = "Todos" | "Cisco" | "Fortinet" | "Microsoft" | "Cibersegurança" | "Linux & Sistemas" | "IT Support" | "Formação";
 
 interface Cert {
   name: string;
@@ -14,11 +14,20 @@ interface Cert {
 }
 
 const CERTS: Cert[] = [
+  // Formação Académica / Profissional
+  { name: "Técnico de Informática e Gestão de Redes", issuer: "Ensiguarda – Escola Profissional da Guarda", date: "2022", category: "Formação", featured: true },
+  { name: "CTesp de Cibersegurança", issuer: "Politécnico da Guarda", date: "2025", category: "Formação", featured: true },
+
+  // IT Support
+  { name: "Google IT Support", issuer: "Google / Coursera", date: "2025", category: "IT Support", featured: true },
+  { name: "IBM IT Support", issuer: "IBM / Coursera", date: "2025", category: "IT Support", featured: true },
+  { name: "Microsoft IT Support Specialist", issuer: "Microsoft / Coursera", date: "2025", category: "IT Support", featured: true },
+
   // Cisco
   { name: "CCNA 1 – Introdução a Redes de Computadores", issuer: "Universidade da Beira Interior", date: "fev 2026", category: "Cisco", featured: true },
   { name: "Hacker Ético", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
   { name: "Cyber Threat Management", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
-  { name: "Trilha: Analista de Cibersegurança Júnior", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco", featured: true },
+  { name: "Trilha: Analista de Cibersegurança Júnior", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
   { name: "Introdução à Cibersegurança", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
   { name: "Defesa de Rede", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
   { name: "Segurança de Endpoint", issuer: "Cisco Networking Academy", date: "jan 2026", category: "Cisco" },
@@ -27,7 +36,7 @@ const CERTS: Cert[] = [
   { name: "Cisco Packet Tracer", issuer: "Cisco Networking Academy", date: "fev 2024", category: "Cisco" },
 
   // Fortinet
-  { name: "Network Security Support Engineer", issuer: "Fortinet", date: "dez 2025", category: "Fortinet", featured: true },
+  { name: "Network Security Support Engineer", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
   { name: "FortiGate Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
   { name: "Enterprise Firewall Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
   { name: "FortiAnalyzer Administrator", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
@@ -35,14 +44,14 @@ const CERTS: Cert[] = [
   { name: "Fortinet Network Security", issuer: "Fortinet", date: "dez 2025", category: "Fortinet" },
 
   // Microsoft
-  { name: "Microsoft 365 Fundamentals", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft", featured: true },
+  { name: "Microsoft 365 Fundamentals", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft" },
   { name: "BE COPILOT READY", issuer: "Academy Microsoft 365 atWork", date: "fev 2026", category: "Microsoft" },
   { name: "Microsoft Cloud Support Associate", issuer: "Microsoft", date: "dez 2025", category: "Microsoft" },
   { name: "Azure Backup, Security & Compliance Administration", issuer: "Microsoft", date: "dez 2025", category: "Microsoft" },
   { name: "Windows Server Administration", issuer: "Packt", date: "dez 2025", category: "Microsoft" },
 
   // Cibersegurança
-  { name: "Enterprise and Infrastructure Security", issuer: "New York University", date: "jan 2026", category: "Cibersegurança", featured: true },
+  { name: "Enterprise and Infrastructure Security", issuer: "New York University", date: "jan 2026", category: "Cibersegurança" },
   { name: "Real-Time Cyber Threat Detection and Mitigation", issuer: "New York University", date: "dez 2025", category: "Cibersegurança" },
   { name: "Introduction to Cyber Attacks", issuer: "New York University", date: "dez 2025", category: "Cibersegurança" },
   { name: "Cyber Incident Response", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
@@ -50,14 +59,18 @@ const CERTS: Cert[] = [
   { name: "Stages of Incident Response", issuer: "InfoSEC", date: "dez 2025", category: "Cibersegurança" },
 
   // Linux & Sistemas
-  { name: "Linux Foundation Certified Sys. Admin. (LFCS)", issuer: "Pearson", date: "dez 2025", category: "Linux & Sistemas", featured: true },
+  { name: "Linux Foundation Certified System Administrator (LFCS)", issuer: "Pearson", date: "dez 2025", category: "Linux & Sistemas", featured: true },
+  { name: "cPanel Professional", issuer: "cPanel", date: "dez 2025", category: "Linux & Sistemas", featured: true },
+  { name: "cPanel & WHM System Administrator I", issuer: "cPanel", date: "dez 2025", category: "Linux & Sistemas", featured: true },
   { name: "Linux for AIX System Administrators", issuer: "IBM", date: "dez 2025", category: "Linux & Sistemas" },
 ];
 
-const CATEGORIES: Category[] = ["Todos", "Cisco", "Fortinet", "Microsoft", "Cibersegurança", "Linux & Sistemas"];
+const CATEGORIES: Category[] = ["Todos", "Formação", "IT Support", "Cisco", "Fortinet", "Microsoft", "Cibersegurança", "Linux & Sistemas"];
 
 const CATEGORY_STYLES: Record<Exclude<Category, "Todos">, { bg: string; text: string; border: string; icon: React.ElementType }> = {
-  "Cisco":            { bg: "bg-blue-500/10",   text: "text-blue-400",   border: "border-blue-500/30",   icon: Network },
+  "Formação":         { bg: "bg-amber-500/10",   text: "text-amber-400",  border: "border-amber-500/30",  icon: BookOpen },
+  "IT Support":       { bg: "bg-teal-500/10",    text: "text-teal-400",   border: "border-teal-500/30",   icon: Headphones },
+  "Cisco":            { bg: "bg-blue-500/10",    text: "text-blue-400",   border: "border-blue-500/30",   icon: Network },
   "Fortinet":         { bg: "bg-red-500/10",     text: "text-red-400",    border: "border-red-500/30",    icon: Shield },
   "Microsoft":        { bg: "bg-sky-500/10",     text: "text-sky-400",    border: "border-sky-500/30",    icon: Cloud },
   "Cibersegurança":   { bg: "bg-purple-500/10",  text: "text-purple-400", border: "border-purple-500/30", icon: Lock },
@@ -71,10 +84,10 @@ export function Certifications() {
   const [activeCategory, setActiveCategory] = useState<Category>("Todos");
   const [showAll, setShowAll] = useState(false);
 
-  const allFiltered = activeCategory === "Todos" ? CERTS : CERTS.filter((c) => c.category === activeCategory);
   const nonFeatured = activeCategory === "Todos"
     ? CERTS.filter((c) => !c.featured)
     : CERTS.filter((c) => c.category === activeCategory && !c.featured);
+
   const featuredFiltered = activeCategory === "Todos"
     ? FEATURED
     : CERTS.filter((c) => c.category === activeCategory && c.featured);
@@ -152,7 +165,6 @@ export function Certifications() {
                           style.border
                         )}
                       >
-                        {/* Featured badge */}
                         <span className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">
                           <Star className="w-2.5 h-2.5 fill-amber-400" /> Destaque
                         </span>
@@ -160,7 +172,7 @@ export function Certifications() {
                           <Icon className="w-6 h-6" />
                         </div>
                         <div className="min-w-0 pr-16">
-                          <h4 className={cn("font-bold text-sm leading-tight mb-1 group-hover:transition-colors", style.text)}>
+                          <h4 className={cn("font-bold text-sm leading-tight mb-1", style.text)}>
                             {cert.name}
                           </h4>
                           <p className="text-xs text-muted-foreground mb-2">{cert.issuer}</p>
@@ -219,7 +231,7 @@ export function Certifications() {
         </AnimatePresence>
 
         {/* Show More */}
-        {hasMore && !showAll && activeCategory === "Todos" && (
+        {hasMore && !showAll && (
           <motion.div className="text-center mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <button
               onClick={() => setShowAll(true)}
