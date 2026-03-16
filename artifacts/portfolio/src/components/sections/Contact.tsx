@@ -19,16 +19,31 @@ export function Contact() {
   type ContactForm = z.infer<typeof contactSchema>;
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
   });
 
   const onSubmit = async (data: ContactForm) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Form data:", data);
-    setIsSubmitted(true);
-    reset();
-    setTimeout(() => setIsSubmitted(false), 5000);
+    setSendError(null);
+    try {
+      const url = (`${import.meta.env.BASE_URL}/api/contact`).replace(/([^:])\/\//g, "$1/");
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        setSendError(err.error ?? "Failed to send. Please try again.");
+        return;
+      }
+      setIsSubmitted(true);
+      reset();
+      setTimeout(() => setIsSubmitted(false), 7000);
+    } catch {
+      setSendError("Network error. Please try again.");
+    }
   };
 
   return (
@@ -128,6 +143,12 @@ export function Contact() {
                   />
                   {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>}
                 </div>
+
+                {sendError && (
+                  <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                    {sendError}
+                  </div>
+                )}
 
                 <button
                   type="submit"
