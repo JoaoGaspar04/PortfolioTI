@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { GitFork, Star, ExternalLink, Loader2, Code2, Eye } from "lucide-react";
+import { useLang } from "@/context/LanguageContext";
 
 const GITHUB_USERNAME = "JoaoGaspar04";
 
@@ -30,6 +31,7 @@ function formatRepoName(name: string) {
 }
 
 export function Projects() {
+  const { t } = useLang();
   const [repos, setRepos] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -51,7 +53,7 @@ export function Projects() {
   }, []);
 
   return (
-    <section id="projetos" className="py-24 relative">
+    <section id="projects" className="py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="text-center mb-16"
@@ -60,11 +62,11 @@ export function Projects() {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-            Projetos no <span className="text-accent">GitHub</span>
+            {t.projects.title} <span className="text-accent">{t.projects.titleAccent}</span>
           </h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full mb-4" />
           <p className="text-muted-foreground">
-            Repositórios públicos de{" "}
+            {t.projects.subtitle}{" "}
             <a
               href={`https://github.com/${GITHUB_USERNAME}`}
               target="_blank"
@@ -79,13 +81,12 @@ export function Projects() {
         {loading && (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-8 h-8 text-accent animate-spin" />
+            <span className="ml-3 text-muted-foreground">{t.projects.loading}</span>
           </div>
         )}
 
         {error && (
-          <div className="text-center text-muted-foreground py-10">
-            Não foi possível carregar os repositórios. Tenta mais tarde.
-          </div>
+          <div className="text-center text-muted-foreground py-10">{t.projects.error}</div>
         )}
 
         {!loading && !error && (
@@ -99,30 +100,25 @@ export function Projects() {
                 transition={{ delay: idx * 0.08 }}
                 className="glass-panel rounded-2xl group hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(139,92,246,0.15)] transition-all duration-300 border border-transparent hover:border-accent/30 flex flex-col overflow-hidden"
               >
-                {/* GitHub OG Preview Image */}
                 <div className="relative w-full h-36 bg-white/5 overflow-hidden flex-shrink-0">
                   <img
                     src={`https://opengraph.github.com/repo/${GITHUB_USERNAME}/${repo.name}`}
-                    alt={`Preview de ${repo.name}`}
+                    alt={`Preview of ${repo.name}`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
                 </div>
 
-                {/* Card Content */}
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="text-lg font-display font-bold group-hover:text-accent transition-colors leading-tight mb-2">
                     {formatRepoName(repo.name)}
                   </h3>
 
                   <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-4">
-                    {repo.description ?? (
-                      <span className="italic opacity-50">Sem descrição</span>
-                    )}
+                    {repo.description ?? <span className="italic opacity-50">{t.projects.noDesc}</span>}
                   </p>
 
-                  {/* Stats */}
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-5">
                     {repo.language && (
                       <span className="flex items-center gap-1.5">
@@ -140,7 +136,6 @@ export function Projects() {
                     </span>
                   </div>
 
-                  {/* Buttons */}
                   <div className="flex gap-2 mt-auto">
                     <a
                       href={repo.html_url}
@@ -149,7 +144,7 @@ export function Projects() {
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 hover:text-foreground text-muted-foreground transition-all duration-200"
                     >
                       <Code2 className="w-4 h-4" />
-                      Código
+                      {t.projects.code}
                     </a>
                     {repo.homepage ? (
                       <a
@@ -159,12 +154,12 @@ export function Projects() {
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium bg-accent/10 border border-accent/30 hover:bg-accent/20 text-accent transition-all duration-200"
                       >
                         <Eye className="w-4 h-4" />
-                        Ver
+                        {t.projects.view}
                       </a>
                     ) : (
                       <span className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium bg-white/5 border border-white/5 text-muted-foreground/30 cursor-not-allowed select-none">
                         <Eye className="w-4 h-4" />
-                        Ver
+                        {t.projects.view}
                       </span>
                     )}
                   </div>
@@ -186,7 +181,7 @@ export function Projects() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-accent/30 text-accent hover:bg-accent/10 transition-all duration-300 font-medium"
           >
-            Ver todos os repositórios no GitHub <ExternalLink className="w-4 h-4" />
+            {t.projects.viewAll} <ExternalLink className="w-4 h-4" />
           </a>
         </motion.div>
       </div>
