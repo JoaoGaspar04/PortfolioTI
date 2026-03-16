@@ -57,7 +57,7 @@ export function Navbar() {
             <TerminalSquare className="w-6 h-6" />
           </div>
           <span className="font-display font-bold text-xl tracking-tight">
-            João<span className="text-primary">.IT</span>
+            João<span className="text-primary"></span>
           </span>
         </a>
 

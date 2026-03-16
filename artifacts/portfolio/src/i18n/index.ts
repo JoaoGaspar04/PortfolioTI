@@ -128,7 +128,7 @@ const en = {
     subtitle:
       "Interested in collaborating or have an opportunity in mind? Feel free to send me a message.",
     location: "Location",
-    locationValue: "Guarda / Lisbon, Portugal",
+    locationValue: "Castelo Branco, Portugal",
     email: "Email",
     phone: "Phone",
     linkedin: "LinkedIn",
@@ -284,7 +284,7 @@ const pt: typeof en = {
     subtitle:
       "Interessado em colaborar ou tem alguma oportunidade em mente? Sinta-se à vontade para me enviar uma mensagem.",
     location: "Localização",
-    locationValue: "Guarda / Lisboa, Portugal",
+    locationValue: "Castelo Branco, Portugal",
     email: "Email",
     phone: "Telemóvel",
     linkedin: "LinkedIn",

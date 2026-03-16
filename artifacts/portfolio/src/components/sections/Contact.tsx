@@ -71,8 +71,8 @@ export function Contact() {
           >
             {[
               { icon: MapPin, label: t.contact.location, value: t.contact.locationValue, color: "text-primary", bg: "bg-primary/10", href: undefined },
-              { icon: Mail, label: t.contact.email, value: "joaogaspar04@exemplo.pt", color: "text-secondary", bg: "bg-secondary/10", href: "mailto:joaogaspar04@exemplo.pt" },
-              { icon: Phone, label: t.contact.phone, value: "+351 912 345 678", color: "text-accent", bg: "bg-accent/10", href: "tel:+351912345678" },
+              { icon: Mail, label: t.contact.email, value: "support@joaocgaspar.ovh", color: "text-secondary", bg: "bg-secondary/10", href: "mailto:support@joaocgaspar.ovh" },
+              { icon: Phone, label: t.contact.phone, value: "+351 968 196 979", color: "text-accent", bg: "bg-accent/10", href: "tel:+351968196979" },
               { icon: Linkedin, label: t.contact.linkedin, value: "linkedin.com/in/joacgaspar", color: "text-blue-400", bg: "bg-blue-500/10", href: "https://www.linkedin.com/in/joacgaspar/" },
             ].map(({ icon: Icon, label, value, color, bg, href }) => (
               <div key={label} className="glass-panel p-6 rounded-2xl flex items-center gap-4">

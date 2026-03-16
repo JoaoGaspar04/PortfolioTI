@@ -8,7 +8,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
           <span className="font-display font-bold text-xl tracking-tight">
-            João<span className="text-primary">.IT</span>
+            João<span className="text-primary"></span>
           </span>
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} João Gaspar. {t.footer.rights}

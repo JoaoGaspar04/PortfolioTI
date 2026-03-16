@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Portfólio IT Portugal"
+title = "Portfólio IT"
 version = "1.0.0"
 id = "artifacts/portfolio"
 router = "path"
