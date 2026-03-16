@@ -2,29 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://portfolio.joaocgaspar.ovh/</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#hero</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#about</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#skills</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#experience</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#certifications</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#badges</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#projects</loc>
-  </url>
-  <url>
-    <loc>https://portfolio.joaocgaspar.ovh/#contact</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
 </urlset>
