@@ -1,16 +1,24 @@
 import { motion } from "framer-motion";
 import { Server, Users, Award, ShieldCheck } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function About() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { config } = useSiteConfig();
+  const a = config.about;
 
   const STATS = [
-    { icon: Award,      value: "3+",   label: t.about.stats.experience, color: "text-primary" },
-    { icon: Users,      value: "500+", label: t.about.stats.tickets,    color: "text-secondary" },
-    { icon: ShieldCheck,value: "99%",  label: t.about.stats.satisfaction,color: "text-accent" },
-    { icon: Server,     value: "10+",  label: t.about.stats.systems,    color: "text-emerald-400" },
+    { icon: Award,       value: a.stat_experience,  label: t.about.stats.experience,  color: "text-primary" },
+    { icon: Users,       value: a.stat_tickets,      label: t.about.stats.tickets,     color: "text-secondary" },
+    { icon: ShieldCheck, value: a.stat_satisfaction, label: t.about.stats.satisfaction, color: "text-accent" },
+    { icon: Server,      value: a.stat_systems,      label: t.about.stats.systems,     color: "text-emerald-400" },
   ];
+
+  const subtitle = lang === "pt" ? a.subtitle_pt : a.subtitle_en;
+  const p1      = lang === "pt" ? a.p1_pt : a.p1_en;
+  const p2      = lang === "pt" ? a.p2_pt : a.p2_en;
+  const p3      = lang === "pt" ? a.p3_pt : a.p3_en;
 
   return (
     <section id="about" className="py-24 relative">
@@ -38,7 +46,7 @@ export function About() {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent mix-blend-overlay z-10" />
               <img
                 src={`${import.meta.env.BASE_URL}images/avatar.png`}
-                alt="João Gaspar"
+                alt={config.profile.fullName}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -51,11 +59,11 @@ export function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-2xl font-display font-semibold mb-6">{t.about.subtitle}</h3>
+            <h3 className="text-2xl font-display font-semibold mb-6">{subtitle}</h3>
             <div className="space-y-4 text-muted-foreground leading-relaxed mb-10">
-              <p>{t.about.p1}</p>
-              <p>{t.about.p2}</p>
-              <p>{t.about.p3}</p>
+              <p>{p1}</p>
+              <p>{p2}</p>
+              <p>{p3}</p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

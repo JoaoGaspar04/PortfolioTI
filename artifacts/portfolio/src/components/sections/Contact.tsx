@@ -6,10 +6,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function Contact() {
   const { t } = useLang();
+  const { config } = useSiteConfig();
   const f = t.contact.form;
+  const c = config.contact;
 
   const contactSchema = z.object({
     name: z.string().min(2, f.nameError),
@@ -46,6 +49,13 @@ export function Contact() {
     }
   };
 
+  const contactItems = [
+    { icon: MapPin, label: t.contact.location, value: c.location, color: "text-primary", bg: "bg-primary/10", href: undefined },
+    { icon: Mail, label: t.contact.email, value: c.email, color: "text-secondary", bg: "bg-secondary/10", href: `mailto:${c.email}` },
+    { icon: Phone, label: t.contact.phone, value: c.phone, color: "text-accent", bg: "bg-accent/10", href: `tel:${c.phone.replace(/\s/g, "")}` },
+    { icon: Linkedin, label: t.contact.linkedin, value: c.linkedin, color: "text-blue-400", bg: "bg-blue-500/10", href: c.linkedinUrl },
+  ];
+
   return (
     <section id="contact" className="py-24 relative bg-card/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,12 +79,7 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            {[
-              { icon: MapPin, label: t.contact.location, value: t.contact.locationValue, color: "text-primary", bg: "bg-primary/10", href: undefined },
-              { icon: Mail, label: t.contact.email, value: "support@joaocgaspar.ovh", color: "text-secondary", bg: "bg-secondary/10", href: "mailto:support@joaocgaspar.ovh" },
-              { icon: Phone, label: t.contact.phone, value: "+351 968 196 979", color: "text-accent", bg: "bg-accent/10", href: "tel:+351968196979" },
-              { icon: Linkedin, label: t.contact.linkedin, value: "linkedin.com/in/joacgaspar", color: "text-blue-400", bg: "bg-blue-500/10", href: "https://www.linkedin.com/in/joacgaspar/" },
-            ].map(({ icon: Icon, label, value, color, bg, href }) => (
+            {contactItems.map(({ icon: Icon, label, value, color, bg, href }) => (
               <div key={label} className="glass-panel p-6 rounded-2xl flex items-center gap-4">
                 <div className={`p-4 rounded-full ${bg} ${color}`}>
                   <Icon className="w-6 h-6" />

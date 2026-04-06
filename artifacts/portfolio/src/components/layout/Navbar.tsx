@@ -3,10 +3,12 @@ import { Link, useLocation } from "wouter";
 import { Menu, X, TerminalSquare, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 import type { Lang } from "@/i18n";
 
 export function Navbar() {
   const { lang, setLang, t } = useLang();
+  const { config } = useSiteConfig();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
@@ -61,7 +63,7 @@ export function Navbar() {
             <TerminalSquare className="w-6 h-6" />
           </div>
           <span className="font-display font-bold text-xl tracking-tight">
-            João<span className="text-primary"></span>
+            {config.profile.navName}<span className="text-primary"></span>
           </span>
         </a>
 

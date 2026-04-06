@@ -1,51 +1,11 @@
 import { motion } from "framer-motion";
 import { Briefcase, Calendar, MapPin } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-
-const EXPERIENCES = [
-  {
-    role:    { en: "IT & Network Management Technician", pt: "Técnico de Informática e Gestão de Redes" },
-    company: "Torre Confecções",
-    type:    { en: "Level 5 Curricular Internship", pt: "Estágio Curricular Nível 5" },
-    period:  { en: "Feb 2025 – Jun 2025 · 5 months", pt: "fev 2025 – jun 2025 · 5 meses" },
-    location:{ en: "Comeal da Torre · On-site", pt: "Comeal da Torre · Presencial" },
-    description: {
-      en: "Level 5 internship focused on cybersecurity, network management and IT infrastructure. Responsible for administering and monitoring the local network, implementing security measures and providing technical support to users.",
-      pt: "Estágio curricular de nível 5 com foco em cibersegurança, gestão de redes e infraestrutura informática. Responsável pela administração e monitorização da rede local, implementação de medidas de segurança e suporte técnico aos utilizadores.",
-    },
-    tags: { en: ["Cybersecurity", "Network Management", "Technical Support", "IT Infrastructure"], pt: ["Cibersegurança", "Gestão de Redes", "Suporte Técnico", "Infraestrutura IT"] },
-    current: true,
-  },
-  {
-    role:    { en: "IT Technician", pt: "Técnico de TI" },
-    company: "SuporteDreams",
-    type:    { en: "Level 4 Curricular Internship", pt: "Estágio Curricular Nível 4" },
-    period:  { en: "Apr 2022 – Jun 2022 · 3 months", pt: "abr 2022 – jun 2022 · 3 meses" },
-    location:{ en: "Guarda, Portugal · On-site", pt: "Guarda, Portugal · Presencial" },
-    description: {
-      en: "Level 4 internship focused on computer networks and technical support. Configuration and maintenance of network equipment, diagnosis and resolution of hardware and software incidents.",
-      pt: "Estágio curricular de nível 4 com foco em redes de computadores e suporte técnico. Configuração e manutenção de equipamentos de rede, diagnóstico e resolução de incidentes de hardware e software.",
-    },
-    tags: { en: ["Computer Networks", "Technical Support", "Hardware", "Diagnostics"], pt: ["Redes de Computadores", "Suporte Técnico", "Hardware", "Diagnóstico"] },
-    current: false,
-  },
-  {
-    role:    { en: "IT Technician", pt: "Técnico de TI" },
-    company: "ClickMed.pt",
-    type:    { en: "Level 4 Curricular Internship", pt: "Estágio Curricular Nível 4" },
-    period:  { en: "Aug 2020 – Nov 2020 · 4 months", pt: "ago 2020 – nov 2020 · 4 meses" },
-    location:{ en: "Covilhã, Castelo Branco · On-site", pt: "Covilhã, Castelo Branco · Presencial" },
-    description: {
-      en: "Level 4 internship in information technology. Technical support, computer systems maintenance and user assistance.",
-      pt: "Estágio curricular de nível 4 na área de tecnologias de informação. Apoio técnico, manutenção de sistemas informáticos e suporte aos utilizadores.",
-    },
-    tags: { en: ["Technical Support", "Systems Maintenance", "Help Desk"], pt: ["Suporte Técnico", "Manutenção de Sistemas", "Help Desk"] },
-    current: false,
-  },
-];
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function Experience() {
   const { lang, t } = useLang();
+  const { config } = useSiteConfig();
 
   return (
     <section id="experience" className="py-24 relative">
@@ -63,7 +23,7 @@ export function Experience() {
         </motion.div>
 
         <div className="relative border-l border-border/50 ml-4 md:ml-8 space-y-12">
-          {EXPERIENCES.map((exp, idx) => (
+          {config.experience.map((exp, idx) => (
             <motion.div
               key={idx}
               className="relative pl-8 md:pl-12"

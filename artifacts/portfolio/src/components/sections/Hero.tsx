@@ -2,21 +2,26 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function Hero() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { config } = useSiteConfig();
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+
+  const roles = lang === "pt" ? config.profile.roles_pt : config.profile.roles_en;
+  const description = lang === "pt" ? config.profile.description_pt : config.profile.description_en;
 
   useEffect(() => {
     setCurrentRoleIndex(0);
-  }, [t]);
+  }, [lang]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentRoleIndex((prev) => (prev + 1) % t.hero.roles.length);
+      setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [t.hero.roles.length]);
+  }, [roles.length]);
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
@@ -40,7 +45,7 @@ export function Hero() {
               {t.hero.greeting}
             </span>
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-bold mb-4">
-              João Gaspar
+              {config.profile.fullName}
             </h1>
           </motion.div>
 
@@ -61,7 +66,7 @@ export function Hero() {
                   transition={{ duration: 0.3 }}
                   className="absolute left-0 top-0 text-gradient whitespace-nowrap"
                 >
-                  {t.hero.roles[currentRoleIndex]}
+                  {roles[currentRoleIndex]}
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -73,7 +78,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {t.hero.description}
+            {description}
           </motion.p>
 
           <motion.div
