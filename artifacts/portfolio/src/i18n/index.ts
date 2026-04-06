@@ -161,6 +161,8 @@ const en = {
     allCategories: "All",
     noResults: "No articles found for your search.",
     readTime: "read",
+    showMore: "Show {n} more articles",
+    showLess: "Show less",
   },
   footer: {
     rights: "All rights reserved.",
@@ -329,6 +331,8 @@ const pt: typeof en = {
     allCategories: "Todos",
     noResults: "Nenhum artigo encontrado para a tua pesquisa.",
     readTime: "leitura",
+    showMore: "Ver mais {n} artigos",
+    showLess: "Mostrar menos",
   },
   footer: {
     rights: "Todos os direitos reservados.",

@@ -22,7 +22,6 @@ export function Navbar() {
     { name: t.nav.certifications, href: "#certifications", id: "certifications" },
     { name: t.nav.badges, href: "#badges", id: "badges" },
     { name: t.nav.projects, href: "#projects", id: "projects" },
-    { name: t.nav.contact, href: "#contact", id: "contact" },
   ];
 
   useEffect(() => {
@@ -108,6 +107,22 @@ export function Navbar() {
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
             )}
           </Link>
+
+          {/* Contact link (last) */}
+          {isOnHome && (
+            <a
+              href="#contact"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary relative py-1",
+                activeSection === "contact" ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              {t.nav.contact}
+              {activeSection === "contact" && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
+              )}
+            </a>
+          )}
 
           {/* Language Toggle */}
           <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-1 py-1">
@@ -203,6 +218,20 @@ export function Navbar() {
           >
             {t.nav.blog}
           </Link>
+          {isOnHome && (
+            <a
+              href="#contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "text-base font-medium p-2 rounded-lg transition-colors",
+                activeSection === "contact"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              )}
+            >
+              {t.nav.contact}
+            </a>
+          )}
         </div>
       )}
     </header>
