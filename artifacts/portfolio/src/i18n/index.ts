@@ -10,6 +10,7 @@ const en = {
     badges: "Badges",
     projects: "Projects",
     contact: "Contact",
+    blog: "Blog",
     cta: "Get in Touch",
   },
   hero: {
@@ -150,6 +151,17 @@ const en = {
       body: "Thank you for reaching out. I'll get back to you as soon as possible.",
     },
   },
+  blog: {
+    title: "Tech",
+    titleAccent: "Blog",
+    subtitle: "Articles about sysadmin, networking, automation and certifications.",
+    backHome: "Back to Home",
+    backToBlog: "Back to Blog",
+    searchPlaceholder: "Search articles...",
+    allCategories: "All",
+    noResults: "No articles found for your search.",
+    readTime: "read",
+  },
   footer: {
     rights: "All rights reserved.",
     madeWith: "Made with ♥ in Portugal",
@@ -166,6 +178,7 @@ const pt: typeof en = {
     badges: "Badges",
     projects: "Projetos",
     contact: "Contacto",
+    blog: "Blog",
     cta: "Falar Comigo",
   },
   hero: {
@@ -305,6 +318,17 @@ const pt: typeof en = {
       title: "Mensagem Enviada!",
       body: "Obrigado pelo seu contacto. Responderei o mais breve possível.",
     },
+  },
+  blog: {
+    title: "Blog",
+    titleAccent: "Técnico",
+    subtitle: "Artigos sobre sysadmin, redes, automação e certificações.",
+    backHome: "Voltar ao Início",
+    backToBlog: "Voltar ao Blog",
+    searchPlaceholder: "Pesquisar artigos...",
+    allCategories: "Todos",
+    noResults: "Nenhum artigo encontrado para a tua pesquisa.",
+    readTime: "leitura",
   },
   footer: {
     rights: "Todos os direitos reservados.",

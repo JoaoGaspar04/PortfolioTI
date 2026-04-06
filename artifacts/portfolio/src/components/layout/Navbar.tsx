@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { Menu, X, TerminalSquare, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/context/LanguageContext";
@@ -9,23 +10,25 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
+  const [location] = useLocation();
 
-  const NAV_LINKS = [
-    { name: t.nav.home, href: "#hero" },
-    { name: t.nav.about, href: "#about" },
-    { name: t.nav.skills, href: "#skills" },
-    { name: t.nav.experience, href: "#experience" },
-    { name: t.nav.certifications, href: "#certifications" },
-    { name: t.nav.badges, href: "#badges" },
-    { name: t.nav.projects, href: "#projects" },
-    { name: t.nav.contact, href: "#contact" },
+  const isOnHome = location === "/" || location === "";
+
+  const ANCHOR_LINKS = [
+    { name: t.nav.home, href: "#hero", id: "hero" },
+    { name: t.nav.about, href: "#about", id: "about" },
+    { name: t.nav.skills, href: "#skills", id: "skills" },
+    { name: t.nav.experience, href: "#experience", id: "experience" },
+    { name: t.nav.certifications, href: "#certifications", id: "certifications" },
+    { name: t.nav.badges, href: "#badges", id: "badges" },
+    { name: t.nav.projects, href: "#projects", id: "projects" },
+    { name: t.nav.contact, href: "#contact", id: "contact" },
   ];
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
-      const sections = NAV_LINKS.map((l) => l.href.substring(1));
-      const current = sections.find((section) => {
+      const current = ANCHOR_LINKS.map((l) => l.id).find((section) => {
         const el = document.getElementById(section);
         if (el) {
           const rect = el.getBoundingClientRect();
@@ -44,6 +47,8 @@ export function Navbar() {
     { code: "pt", label: "PT" },
   ];
 
+  const isBlogActive = location.startsWith("/blog");
+
   return (
     <header
       className={cn(
@@ -52,7 +57,7 @@ export function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <a href="#hero" className="flex items-center gap-2 group">
+        <a href="/" className="flex items-center gap-2 group">
           <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
             <TerminalSquare className="w-6 h-6" />
           </div>
@@ -63,23 +68,46 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-6">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary relative py-1",
-                activeSection === link.href.substring(1)
-                  ? "text-primary"
-                  : "text-muted-foreground"
+          {isOnHome
+            ? ANCHOR_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary relative py-1",
+                    activeSection === link.id
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {link.name}
+                  {activeSection === link.id && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
+                  )}
+                </a>
+              ))
+            : (
+                <a
+                  href="/"
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {t.nav.home}
+                </a>
               )}
-            >
-              {link.name}
-              {activeSection === link.href.substring(1) && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
-              )}
-            </a>
-          ))}
+
+          {/* Blog link */}
+          <Link
+            href="/blog"
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary relative py-1",
+              isBlogActive ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            {t.nav.blog}
+            {isBlogActive && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
+            )}
+          </Link>
 
           {/* Language Toggle */}
           <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-1 py-1">
@@ -138,21 +166,43 @@ export function Navbar() {
       {/* Mobile Nav */}
       {isMobileMenuOpen && (
         <div className="lg:hidden glass-panel border-t border-white/5 absolute top-full left-0 right-0 py-4 px-4 flex flex-col gap-3 shadow-2xl">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={cn(
-                "text-base font-medium p-2 rounded-lg transition-colors",
-                activeSection === link.href.substring(1)
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+          {isOnHome
+            ? ANCHOR_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "text-base font-medium p-2 rounded-lg transition-colors",
+                    activeSection === link.id
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  )}
+                >
+                  {link.name}
+                </a>
+              ))
+            : (
+                <a
+                  href="/"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-base font-medium p-2 rounded-lg transition-colors text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                >
+                  {t.nav.home}
+                </a>
               )}
-            >
-              {link.name}
-            </a>
-          ))}
+          <Link
+            href="/blog"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={cn(
+              "text-base font-medium p-2 rounded-lg transition-colors",
+              isBlogActive
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+            )}
+          >
+            {t.nav.blog}
+          </Link>
         </div>
       )}
     </header>
