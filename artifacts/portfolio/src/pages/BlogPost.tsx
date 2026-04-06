@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useLang } from "@/context/LanguageContext";
 import { getPostBySlug, formatDate } from "@/data/blog";
+import { getAllAdminPosts } from "@/hooks/useAdminPosts";
 import NotFound from "@/pages/not-found";
 
 function renderMarkdown(md: string): string {
@@ -45,7 +46,8 @@ function renderMarkdown(md: string): string {
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const { lang, t } = useLang();
-  const post = getPostBySlug(slug ?? "");
+  const adminPosts = getAllAdminPosts();
+  const post = adminPosts.find((p) => p.slug === slug) ?? getPostBySlug(slug ?? "");
 
   useEffect(() => {
     window.scrollTo(0, 0);

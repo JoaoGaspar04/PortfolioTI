@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useLang } from "@/context/LanguageContext";
 import { blogPosts, formatDate } from "@/data/blog";
+import { getAllAdminPosts } from "@/hooks/useAdminPosts";
 
 const CATEGORIES = ["All", "Sysadmin", "Networking", "Monitoring", "Automation", "Certifications"];
 const INITIAL_VISIBLE = 3;
@@ -16,7 +17,9 @@ export default function Blog() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [showAll, setShowAll] = useState(false);
 
-  const filtered = blogPosts.filter((post) => {
+  const allPosts = [...getAllAdminPosts(), ...blogPosts];
+
+  const filtered = allPosts.filter((post) => {
     const title = lang === "pt" ? post.titlePt : post.titleEn;
     const excerpt = lang === "pt" ? post.excerptPt : post.excerptEn;
     const matchesSearch =
